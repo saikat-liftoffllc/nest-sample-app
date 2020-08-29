@@ -1,17 +1,13 @@
+import { InputType, Field } from '@nestjs/graphql';
 import { IsEmail, Length } from 'class-validator';
 
-export class UpdateUserDto {
-  @Length(3, 30)
-  name: string;
-
-  @IsEmail()
-  email: string;
-}
-
+@InputType()
 export class CreateUserDto {
+  @Field()
   @Length(3, 30)
   name: string;
 
+  @Field()
   @IsEmail()
   email: string;
 }

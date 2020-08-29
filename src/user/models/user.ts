@@ -12,6 +12,9 @@ export class User extends Document {
   @Field()
   @Prop()
   email: string;
+
+  @Field(() => [User])
+  friends: User[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
