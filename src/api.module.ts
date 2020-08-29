@@ -15,6 +15,7 @@ import config from './config/default';
       autoSchemaFile: 'schema.gql',
       sortSchema: true,
       include: [UserModule],
+      installSubscriptionHandlers: true,
     }),
     ConfigModule.forRoot({ load: [config] }),
     MongooseModule.forRootAsync({

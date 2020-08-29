@@ -5,11 +5,15 @@ import {
   Parent,
   ResolveField,
   Mutation,
+  Subscription,
 } from '@nestjs/graphql';
+import { PubSub } from 'graphql-subscriptions';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './models/user';
 import { CreateUserDto } from './dto/user.create.dto';
+
+const pubSub = new PubSub();
 
 @Resolver(() => User)
 export class UserResolver {
@@ -18,7 +22,14 @@ export class UserResolver {
   @Mutation(() => User)
   async createUser(@Args('data') data: CreateUserDto): Promise<User> {
     const user = new this.userModel(data);
-    return user.save();
+    user.save();
+    pubSub.publish('userCreated', { userCreated: user });
+    return user;
+  }
+
+  @Subscription(() => User)
+  userCreated(): any {
+    return pubSub.asyncIterator('userCreated');
   }
 
   @Query(() => User)

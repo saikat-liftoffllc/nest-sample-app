@@ -16,6 +16,10 @@ type Query {
   users: [User!]!
 }
 
+type Subscription {
+  userCreated: User!
+}
+
 type User {
   email: String!
   friends: [User!]!
