@@ -1,10 +1,14 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Document } from 'mongoose';
+import { Document, SchemaTypes } from 'mongoose';
 
 @ObjectType()
 @Schema()
 export class User extends Document {
+
+  @Field()
+  id: string;
+
   @Field()
   @Prop()
   name: string;
@@ -13,8 +17,8 @@ export class User extends Document {
   @Prop()
   email: string;
 
-  @Field(() => [User])
-  friends: User[];
+  @Prop({ type: SchemaTypes.ObjectId, ref: User.name })
+  customProperty?: any
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

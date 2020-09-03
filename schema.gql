@@ -21,7 +21,9 @@ type Subscription {
 }
 
 type User {
+  customProperty: User
   email: String!
   friends: [User!]!
+  id: String!
   name: String!
 }
