@@ -6,19 +6,28 @@ import {
   ResolveField,
   Mutation,
   Subscription,
-  ResolveProperty,
 } from '@nestjs/graphql';
 import { PubSub } from 'graphql-subscriptions';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './models/user';
 import { CreateUserDto } from './dto/user.create.dto';
+import DataLoader from 'dataloader';
 
 const pubSub = new PubSub();
 
 @Resolver(() => User)
 export class UserResolver {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) { }
+  protected userLoader: any;
+  constructor(@InjectModel(User.name) private userModel: Model<User>) {
+
+    this.userLoader = new DataLoader(async (userIds: string[]) => {
+      console.log('userIds', userIds)
+      const users = await this.userModel.find({ _id: { $in: userIds } });
+      return userIds.map(() => users);
+    });
+
+  }
 
   @Mutation(() => User)
   async createUser(@Args('data') data: CreateUserDto): Promise<User> {
@@ -49,8 +58,9 @@ export class UserResolver {
 
   @ResolveField('friends', () => [User])
   async friends(@Parent() user: User): Promise<User[]> {
-    console.log('ResolveField, user', user);
-    return this.userModel.find();
+    const friends = await this.userLoader.load(user.id);
+    console.log('friends', friends)
+    return friends;
   }
 
   @ResolveField('customProperty', () => User, { nullable: true })
